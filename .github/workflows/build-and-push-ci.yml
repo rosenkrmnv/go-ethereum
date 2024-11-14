@@ -1,0 +1,25 @@
+name: Build and Push Docker Image
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+    labels:
+      - 'CI:Build'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      - name: Build Docker Image
+        run: docker build -t rosenkaramanov/go-ethereum:${{ github.sha }} .
+
+      - name: Push Docker Image
+        run: docker push rosenkaramanov/go-ethereum:${{ github.sha }}
