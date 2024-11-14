@@ -1,0 +1,13 @@
+version: '3'
+services:
+  ethereum-node:
+    image: rosenkaramanov/go-ethereum:latest
+    ports:
+      - "8545:8545"
+      - "30303:30303"
+    networks:
+      - devnet
+
+networks:
+  devnet:
+    driver: bridge
