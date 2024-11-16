@@ -19,7 +19,12 @@ jobs:
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
       - name: Build Docker Image
-        run: docker build -t rosenkaramanov/go-ethereum:${{ github.sha }} .
+        run: |
+          docker build -t rosenkaramanov/go-ethereum:${{ github.sha }} .
+          docker tag rosenkaramanov/go-ethereum:${{ github.sha }} rosenkaramanov/go-ethereum:latest
+
 
       - name: Push Docker Image
-        run: docker push rosenkaramanov/go-ethereum:${{ github.sha }}
+        run: |
+          docker push rosenkaramanov/go-ethereum:${{ github.sha }}
+          docker push rosenkaramanov/go-ethereum:latest

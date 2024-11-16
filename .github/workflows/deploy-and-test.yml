@@ -1,0 +1,28 @@
+name: Deploy and Test on Devnet
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+    labels:
+      - 'CI:Deploy'
+
+jobs:
+  deploy-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      - name: Start Local Devnet
+        run: docker-compose up -d
+
+      - name: Deploy Contracts
+        working-directory: ./hardhat
+        run: npx hardhat run scripts/deploy.js --network localhost
+
+      - name: Build and Push Devnet Image with Contracts
+        run: |
+          docker commit ethereum-node rosenkaramanov/go-ethereum:with-contracts
+          docker push rosenkaramanov/go-ethereum:with-contracts
