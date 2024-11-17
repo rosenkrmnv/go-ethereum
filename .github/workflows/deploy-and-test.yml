@@ -29,14 +29,21 @@ jobs:
       - name: Start Local Devnet
         run: docker-compose up -d
 
-      - name: Run Hardhat Tests Inside Container
+      - name: Install Dependencies
         run: |
-          # Wait for Ethereum node to be ready (adjust sleep time based on your node's startup)
-          sleep 10
-          docker-compose exec ethereum-node sh -c "cd /app/hardhat && npx hardhat run scripts/deploy.js"
-          docker-compose exec ethereum-node sh -c "cd /app/hardhat && npx hardhat test"
+          cd hardhat
+          npm install
 
-      - name: Build and Push Devnet Image with Contracts
+      - name: Update Hardhat Config
         run: |
-          docker commit ethereum-node rosenkaramanov/go-ethereum:with-contracts
-          docker push rosenkaramanov/go-ethereum:with-contracts
+          echo "Updating hardhat.config.js for Devnet..."
+          sed -i '/networks: {/a \
+          \ \ \ \ devnet: {\
+          \ \ \ \ \ \ url: \"http://127.0.0.1:8545\",\
+          \ \ \ \ \ \ chainId: 1337\
+          \ \ \ \ },' hardhat/hardhat.config.js
+
+      - name: Run Hardhat Tests
+        run: |
+          cd hardhat
+          npx hardhat test --network devnet
