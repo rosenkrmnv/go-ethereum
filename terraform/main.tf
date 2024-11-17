@@ -23,8 +23,8 @@ terraform {
 
 data "aws_availability_zones" "available" {
   filter {
-    name   = "eu-central-1"
-    values = ["eu-central-1a"]
+    name   = "opt-in-status"
+    values = ["opt-in-not-required"]
   }
 }
 
