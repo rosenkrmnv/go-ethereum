@@ -11,6 +11,7 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'CI:Build') # Add this condition
     steps:
       - name: Check out the repository
         uses: actions/checkout@v2
