@@ -1,4 +1,4 @@
-name: Deploy and Test on Devnet
+name: Deploy and Test, Build and Push contracts img
 
 on:
   pull_request:
@@ -11,7 +11,7 @@ on:
 jobs:
   deploy-and-test:
     runs-on: ubuntu-latest
-    if: contains(github.event.pull_request.labels.*.name, 'CI:Deploy') # Add this condition
+    if: contains(github.event.pull_request.labels.*.name, 'CI:Deploy') #Trigger if CI:Deploy tag is present
     steps:
       - name: Check out the repository
         uses: actions/checkout@v2
@@ -43,17 +43,15 @@ jobs:
           \ \ \ \ \ \ chainId: 1337\
           \ \ \ \ },' hardhat/hardhat.config.js
 
+      - name: Run Hardhat scripts/deploy.js
+        run: |
+          cd hardhat
+          npx hardhat run scripts/deploy.js
+
       - name: Run Hardhat Tests
         run: |
           cd hardhat
           npx hardhat test
-
-      - name: Run Hardhat Tests Inside Container
-        run: |
-          # Wait for Ethereum node to be ready (adjust sleep time based on your node's startup)
-          sleep 10
-          docker-compose exec ethereum-node sh -c "cd /app/hardhat && npx hardhat run scripts/deploy.js"
-          docker-compose exec ethereum-node sh -c "cd /app/hardhat && npx hardhat test"
 
       - name: Build and Push Devnet Image with Contracts
         run: |
