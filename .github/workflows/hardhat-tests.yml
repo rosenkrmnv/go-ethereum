@@ -60,7 +60,7 @@ jobs:
       - name: Run Hardhat Tests
         run: |
           cd hardhat
-          npx hardhat test --network devnet
+          npx hardhat test
 
       # 8. Stop the Devnet
       - name: Stop Devnet
