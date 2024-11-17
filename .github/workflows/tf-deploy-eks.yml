@@ -35,7 +35,14 @@ jobs:
         run: cd terraform && terraform plan
 
       - name: Terraform Apply
-        run: cd terraform && terraform apply -auto-approve
+        run: cd terraform && terraform apply -auto-approve tfplan
+
+      - name: aws eks configure
+        run: |
+          cd terraform && export EKS_CLUSTER_NAME=$(terraform output -raw cluster_name)
+          aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
+          kubectl cluster-info
+
 
       - name: Set up Helm
         run: |
