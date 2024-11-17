@@ -11,6 +11,7 @@ on:
 jobs:
   deploy-and-test:
     runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'CI:Deploy') # Add this condition
     steps:
       - name: Check out the repository
         uses: actions/checkout@v2
@@ -28,7 +29,7 @@ jobs:
       - name: Deploy Contracts
         working-directory: ./hardhat
         run: |
-          npm install --save-dev
+          cd /app/hardhat
           npx hardhat run scripts/deploy.js --network localhost
 
       - name: Build and Push Devnet Image with Contracts

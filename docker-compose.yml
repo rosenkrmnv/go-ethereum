@@ -2,6 +2,7 @@ version: '3'
 services:
   ethereum-node:
     image: rosenkaramanov/go-ethereum:latest
+    pull_policy: always
     container_name: ethereum-node
     ports:
       - "8545:8545" # JSON-RPC
