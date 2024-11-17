@@ -23,6 +23,7 @@ RUN apk add --no-cache ca-certificates
 COPY --from=builder /go-ethereum/build/bin/geth /usr/local/bin/
 
 RUN apk add --no-cache nodejs npm
+RUN apk add --no-cache bash
 
 # Install dependencies
 RUN npm install -g hardhat
