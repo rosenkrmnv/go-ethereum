@@ -7,30 +7,17 @@ services:
     ports:
       - "8545:8545" # JSON-RPC
       - "30303:30303" # P2P communication
-    networks:
-      - devnet
     volumes:
       - ./hardhat:/app/hardhat # Mount the hardhat directory
-    command: >
-      /bin/sh -c "
-        # Start Ethereum node in development mode and wait for logs
-        geth --dev --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --rpcapi web3,eth,debug,personal,net,miner,admin \
-        --networkid 1337 --http --http.addr 0.0.0.0 --http.port 8545 --http.api web3,eth,debug,personal,net,miner & \
-        sleep 15 && \
-
-        # Install dependencies (e.g., Hardhat and dependencies)
-        echo 'Installing dependencies...'; \
-        cd /app/hardhat && npm install && \
-
-        # Run Hardhat tests
-        echo 'Running Hardhat tests...'; \
-        npx hardhat test --network devnet && \
-
-        # Deploy contracts to the local devnet
-        echo 'Deploying contracts...'; \
-        npx hardhat run scripts/deploy.js --network devnet
-      "
-
+    command:
+      [
+        "--dev",                       # Run in developer mode
+        "--http",                      # Enable JSON-RPC over HTTP
+        "--http.addr", "0.0.0.0",      # Allow access from any address
+        "--http.port", "8545",         # RPC port
+        "--http.api", "eth,web3,net",  # Enable APIs for RPC
+        "--allow-insecure-unlock"      # Allow accounts to be unlocked
+      ]
 
 networks:
   devnet:
