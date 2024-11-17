@@ -20,6 +20,7 @@ services:
       cd /app/hardhat && npm install &&
       # Run Hardhat tests
       npx hardhat test --network devnet
+      npx hardhat run scripts/deploy.js --network localhost
     "]
 
 
