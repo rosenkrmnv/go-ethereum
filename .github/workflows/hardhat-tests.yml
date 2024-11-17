@@ -10,7 +10,7 @@ on:
 jobs:
   hardhat-tests:
     runs-on: ubuntu-latest
-
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}  # Ensure this runs only if the previous workflow succeeded
     steps:
       # 1. Check out the repository
       - name: Check out the repository
