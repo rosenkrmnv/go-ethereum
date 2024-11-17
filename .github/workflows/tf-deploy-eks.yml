@@ -1,0 +1,58 @@
+name: Deploy to AWS EKS
+
+on:
+  workflow_run:
+    workflows:
+      - Run Hardhat Tests Against Predeployed Contracts
+    types:
+      - completed
+  pull_request:
+    types: [closed]
+    branches:
+      - master
+    labels:
+      - 'CI:DeployProd'
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'CI:DeployProd') #Trigger if CI:DeployProd tag is present
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}  # Ensure this runs only if the previous workflow succeeded
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.3.0
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+
+      - name: Set up Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+          helm version
+
+      - name: Set up Repo
+        run: |
+          helm repo add rosen-helm-charts https://rosenkrmnv.github.io/helm-charts/
+          helm repo list
+
+      - name: Deploy Helm chart
+        run: |
+          helm upgrade --install go-ethereum-chart rosen-helm-charts/go-ethereum-deployment --namespace default
