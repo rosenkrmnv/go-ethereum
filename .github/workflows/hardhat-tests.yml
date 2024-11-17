@@ -1,11 +1,11 @@
 name: Run Hardhat Tests Against Predeployed Contracts
 
 on:
-  pull_request:
+  workflow_run:
+    workflows:
+      - Deploy and Test on Devnet
     types:
-      - closed
-    branches:
-      - master
+      - completed
 
 jobs:
   hardhat-tests:

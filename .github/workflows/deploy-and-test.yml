@@ -27,7 +27,9 @@ jobs:
 
       - name: Deploy Contracts
         working-directory: ./hardhat
-        run: npx hardhat run scripts/deploy.js --network localhost
+        run: |
+          npm install --save-dev
+          npx hardhat run scripts/deploy.js --network localhost
 
       - name: Build and Push Devnet Image with Contracts
         run: |
