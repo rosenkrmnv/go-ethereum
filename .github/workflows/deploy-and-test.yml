@@ -29,6 +29,13 @@ jobs:
       - name: Start Local Devnet
         run: docker-compose up
 
+      - name: Run Hardhat Tests Inside Container
+        run: |
+          # Wait for Ethereum node to be ready (adjust sleep time based on your node's startup)
+          sleep 10
+          docker-compose exec ethereum-node sh -c "cd /app/hardhat && npx hardhat run scripts/deploy.js"
+          docker-compose exec ethereum-node sh -c "cd /app/hardhat && npx hardhat test"
+
       - name: Build and Push Devnet Image with Contracts
         run: |
           docker commit ethereum-node rosenkaramanov/go-ethereum:with-contracts
