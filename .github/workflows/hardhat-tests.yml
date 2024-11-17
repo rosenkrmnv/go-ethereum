@@ -3,7 +3,7 @@ name: Run Hardhat Tests Against Predeployed Contracts
 on:
   workflow_run:
     workflows:
-      - Deploy and Test on Devnet
+      - Deploy and Test, Build and Push contracts img
     types:
       - completed
 
