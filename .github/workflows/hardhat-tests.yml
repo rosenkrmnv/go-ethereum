@@ -1,0 +1,67 @@
+name: Run Hardhat Tests Against Predeployed Contracts
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+jobs:
+  hardhat-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Check out the repository
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      # 2. Log in to Docker Hub
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      # 3. Start Docker Container with Predeployed Contracts
+      - name: Start Predeployed Contracts Container
+        run: |
+          docker pull rosenkaramanov/go-ethereum:predeployed-latest
+          docker run -d --name devnet \
+            -p 8545:8545 \
+            rosenkaramanov/go-ethereum:predeployed-latest
+
+      # 4. Wait for Devnet to be Ready
+      - name: Wait for Devnet to Start
+        run: |
+          for i in {1..30}; do
+            if curl -s http://127.0.0.1:8545; then
+              echo "Devnet is ready!";
+              break;
+            fi
+            echo "Waiting for Devnet to start...";
+            sleep 5;
+          done
+
+      # 5. Install Dependencies
+      - name: Install Dependencies
+        run: |
+          cd hardhat
+          npm install
+
+      # 6. Configure Hardhat for Devnet
+      - name: Update Hardhat Config
+        run: |
+          echo "Updating hardhat.config.js for Devnet..."
+          sed -i '/networks: {/a \
+          \ \ \ \ devnet: {\
+          \ \ \ \ \ \ url: \"http://127.0.0.1:8545\",\
+          \ \ \ \ \ \ chainId: 1337\
+          \ \ \ \ },' hardhat/hardhat.config.js
+
+      # 7. Run Hardhat Tests
+      - name: Run Hardhat Tests
+        run: |
+          cd hardhat
+          npx hardhat test --network devnet
+
+      # 8. Stop the Devnet
+      - name: Stop Devnet
+        run: docker stop devnet && docker rm devnet
