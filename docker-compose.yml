@@ -2,9 +2,52 @@ version: '3'
 services:
   ethereum-node:
     image: rosenkaramanov/go-ethereum:latest
+    container_name: ethereum-node
     ports:
-      - "8545:8545"
-      - "30303:30303"
+      - "8545:8545" # JSON-RPC
+      - "30303:30303" # P2P communication
+    networks:
+      - devnet
+    command:
+      [
+        "--dev",                       # Run in developer mode
+        "--http",                      # Enable JSON-RPC over HTTP
+        "--http.addr", "0.0.0.0",      # Allow access from any address
+        "--http.port", "8545",         # RPC port
+        "--http.api", "eth,web3,net",  # Enable APIs for RPC
+        "--allow-insecure-unlock"      # Allow accounts to be unlocked
+      ]
+
+  blockscout:
+    image: blockscout/blockscout:latest
+    container_name: blockscout
+    environment:
+      DATABASE_URL: "postgres://postgres:postgres@blockscout-db:5432/blockscout"
+      ETHEREUM_JSONRPC_HTTP_URL: "http://ethereum-node:8545"
+      ETHEREUM_JSONRPC_WS_URL: "ws://ethereum-node:8546"
+      ETHEREUM_JSONRPC_TRACE_URL: "http://ethereum-node:8545"
+      ETHEREUM_NETWORK: "Devnet"
+      COIN: "ETH"
+      NETWORK_PATH: "/"
+      SUBNETWORK: "devnet"
+      LOGO: "https://ethereum.org/static/28214bb3c6fb3d1d2ba4b5e6c44b1f92/68c03/ethereum-logo-portrait-black.png"
+    depends_on:
+      - ethereum-node
+      - blockscout-db
+    ports:
+      - "4000:4000"
+    networks:
+      - devnet
+
+  blockscout-db:
+    image: postgres:13
+    container_name: blockscout-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: blockscout
+    ports:
+      - "5432:5432"
     networks:
       - devnet
 
