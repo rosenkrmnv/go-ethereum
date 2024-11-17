@@ -11,15 +11,16 @@ services:
       - devnet
     volumes:
       - ./hardhat:/app/hardhat # Mount the hardhat directory
-    command:
-      [
-        "--dev",                       # Run in developer mode
-        "--http",                      # Enable JSON-RPC over HTTP
-        "--http.addr", "0.0.0.0",      # Allow access from any address
-        "--http.port", "8545",         # RPC port
-        "--http.api", "eth,web3,net",  # Enable APIs for RPC
-        "--allow-insecure-unlock"      # Allow accounts to be unlocked
-      ]
+    command: ["sh", "-c", "
+      # Start Ethereum node in development mode
+      geth --dev --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --rpcapi web3,eth,debug,personal,net,miner,admin &
+      # Wait for the Ethereum node to start up (adjust timing as needed)
+      sleep 10 &&
+      # Install dependencies (e.g., Hardhat and dependencies)
+      cd /app/hardhat && npm install &&
+      # Run Hardhat tests
+      npx hardhat test --network devnet
+    "]
 
 
 networks:

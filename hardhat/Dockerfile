@@ -5,7 +5,7 @@ FROM rosenkaramanov/go-ethereum:latest
 WORKDIR /usr/src/app
 
 # Copy only package.json and package-lock.json initially for efficient caching
-COPY package*.json ./
+COPY ./hardhat /app/hardhat
 
 # Install dependencies
 RUN npm install -g hardhat
