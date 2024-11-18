@@ -29,7 +29,7 @@ jobs:
           terraform_version: 1.5.7
 
       - name: Terraform Init
-        run: cd terraform && terraform init
-
-      - name: Terraform Destroy
-        run: cd terraform && terraform destroy -auto-approve
+        run: |
+          cd terraform
+          terraform init
+          terraform destroy -auto-approve
