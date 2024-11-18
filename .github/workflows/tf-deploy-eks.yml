@@ -39,10 +39,11 @@ jobs:
 
       - name: aws eks configure
         run: |
-          cd terraform && export EKS_CLUSTER_NAME=$(terraform output -raw cluster_name)
+          echo "$(terraform output -raw cluster_name)" >> ../eks_cluster_name.txt
+          export EKS_CLUSTER_NAME=$(cat ../eks_cluster_name.txt)
+          echo $EKS_CLUSTER_NAME
           aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
           kubectl cluster-info
-
 
       - name: Set up Helm
         run: |
