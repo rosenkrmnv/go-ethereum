@@ -34,12 +34,9 @@ jobs:
       - name: Terraform Plan
         run: cd terraform && terraform plan
 
-      - name: Terraform Apply
-        run: cd terraform && terraform apply -auto-approve
-
-      - name: aws eks configure
+      - name: Terraform Apply & aws eks configure
         run: |
-          terraform output -json > ../outputs.json
+          cd terraform && terraform apply -auto-approve
           echo "$(terraform output -raw cluster_name)" >> ../eks_cluster_name.txt
           export EKS_CLUSTER_NAME=$(cat ../eks_cluster_name.txt)
           echo $EKS_CLUSTER_NAME
