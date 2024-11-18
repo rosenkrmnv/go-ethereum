@@ -37,8 +37,7 @@ jobs:
       - name: Terraform Apply & aws eks configure
         run: |
           cd terraform && terraform apply -auto-approve
-          export EKS_CLUSTER_NAME=$(terraform output -raw cluster_name)
-          echo "EKS_CLUSTER_NAME=$EKS_CLUSTER_NAME" >> $GITHUB_ENV
+          EKS_CLUSTER_NAME=$(terraform output -raw cluster_name)
           aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
           kubectl cluster-info
 
