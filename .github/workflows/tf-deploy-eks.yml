@@ -39,6 +39,7 @@ jobs:
 
       - name: aws eks configure
         run: |
+          terraform output -json > ../outputs.json
           echo "$(terraform output -raw cluster_name)" >> ../eks_cluster_name.txt
           export EKS_CLUSTER_NAME=$(cat ../eks_cluster_name.txt)
           echo $EKS_CLUSTER_NAME
