@@ -28,13 +28,13 @@ jobs:
         with:
           terraform_version: 1.5.7
 
-      - name: Terraform Init, Plan, Apply & aws eks configure
+      - name: Terraform Init, Plan, Apply & aws eks config
         run: |
           cd terraform && terraform init
           terraform plan
           terraform apply -auto-approve
           terraform output
-          echo "$(terraform output -raw cluster_name)" >> ../eks_cluster_name.txt
+          echo "$(terraform-bin output -raw cluster_name)" >> ../eks_cluster_name.txt
           EKS_CLUSTER_NAME=$(cat ../eks_cluster_name.txt)
           echo $EKS_CLUSTER_NAME
           aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
