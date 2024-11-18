@@ -1,5 +1,14 @@
 ## Go Ethereum
 
+## How to trigger build with tags
+
+Merge a new pull request with one of the following tags to trigger build stages:
+
+CI:Build - build new image of the main project and upload it to repo
+CI:Deploy - deploys devnet using the image deployed in the first stage, deploys contracts, creates new image with contracts 
+CI:DeployProd - deploys AWS EKS and go-ethereum:with-contracts image inside it
+CI:DestroyProd - destroys AWS EKS
+
 Golang execution layer implementation of the Ethereum protocol.
 
 [![API Reference](
